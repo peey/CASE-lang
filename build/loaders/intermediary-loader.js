@@ -1,3 +1,5 @@
+// Why does this file exist? See https://github.com/kozily/nearley-loader/issues/6
+
 //https://stackoverflow.com/a/13647409/1412255
 function removeLastLine(x) {
   if(x.lastIndexOf("\n")>0) {
@@ -17,6 +19,5 @@ function removeLastNLines(x, n) {
 module.exports = function(source, map) {
   const temp = removeLastNLines(source, 7) + "\n return grammar ;})();"
   const final = "export default " + temp
-  console.log("yo, debug loader \n", final, "\n\n")
   this.callback(null, final, map);
 };

@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "algebra.js": "^0.2.6",
+    "colors": "^1.1.2",
     "complex.js": "^2.0.4",
+    "diff": "^3.4.0",
     "moo": "^0.4.3",
     "nearley": "^2.11.0",
     "nearley-loader": "0.0.3",
@@ -60,6 +62,7 @@
     "portfinder": "^1.0.13",
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.6.0",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",
