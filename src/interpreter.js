@@ -1,6 +1,8 @@
 import {Parser, Grammar} from 'nearley'
 import moo from 'moo'
 import grammar from './lisp-grammar.ne'
+import semantics from './semantics'
+
 const parser = new Parser(Grammar.fromCompiled(grammar))
 
 // removes comments
@@ -41,10 +43,18 @@ export function walkForms(forms, cbs, parentAux) {
   })
 }
 
+//TODO
 export function semanticAnalyzer(parsed) {
   /* Here are the semantic rules which this function will check
-   * 1. First child of a form is a
+   * 1. First child of a form is a functionName
+   * 2. Based on the function name, there should be constraints on what comes next in the form
    */
+
+  const assertForm = {
+    open: function(form) {
+      if (form[1].type == "form") {}
+    }
+  }
 }
 
 if (process && process.argv.length == 3) {
