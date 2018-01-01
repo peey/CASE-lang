@@ -15,7 +15,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         test: /\.case$|\.case\.out$/, // .case.json is taken care of already by some other rules
         loader: 'raw-loader',
         include: [
-          path.resolve(__dirname, "../test/unit/programs/")
+          path.resolve(__dirname, "../test/programs/")
         ]
       }
     ])
