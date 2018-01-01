@@ -1,5 +1,5 @@
 import {parse} from '@/interpreter'
-import {evaluateExpression, types, state} from '@/semantics'
+import {types, ExecutionEnvironment} from '@/semantics'
 import h from '@/helpers'
 
 const jsdiff = require("diff") // for some reason can't import this
@@ -72,40 +72,45 @@ function printDiff(diff) {
 
 describe("some handwritten small programs", function () {
   it("opens the compass with the unit length", () => {
+    const ee = new ExecutionEnvironment()
     const program = parse("(open Unit)")
-    const result = evaluateExpression(program.body.forms[0])
+    const result = ee.eval(program.body.forms[0])
 
     assert(typeof result === "undefined")
-    assert(h.eq(state.compassLength.value, nerdamer(1)))
+    assert(h.eq(ee.compassLength.value, nerdamer(1)))
   })
 
   it("evaluates a block", () => {
+    const ee = new ExecutionEnvironment()
     const program = parse("(block (open Unit))")
-    const result = evaluateExpression(program.body.forms[0])
+    const result = ee.eval(program.body.forms[0])
 
     assert(typeof result === "undefined")
-    assert(h.eq(state.compassLength.value, nerdamer(1)))
+    assert(h.eq(ee.compassLength.value, nerdamer(1)))
   })
 
   it("evaluates a circle", () => {
+    const ee = new ExecutionEnvironment()
     const program = parse("(block (open Unit) (arc O))")
-    const result = evaluateExpression(program.body.forms[0])
+    const result = ee.eval(program.body.forms[0])
     assert(result instanceof types.Circle)
     assert(result.same(new types.Circle(new types.Point(0, 0), 1)))
   })
 
   it("can make new labels", () => {
+    const ee = new ExecutionEnvironment()
     const program = parse("(label (names MUnit FUnit) Unit Unit)")
-    const result = evaluateExpression(program.body.forms[0])
+    const result = ee.eval(program.body.forms[0])
 
     assert(typeof result === "undefined")
-    assert(h.eq(state.symbolTable.resolve("MUnit").value, nerdamer(1)))
-    assert(h.eq(state.symbolTable.resolve("FUnit").value, nerdamer(1)))
+    assert(h.eq(ee.symbolTable.resolve("MUnit").value, nerdamer(1)))
+    assert(h.eq(ee.symbolTable.resolve("FUnit").value, nerdamer(1)))
   })
 
   it("can give intersection between a circle and a line", () => {
+    const ee = new ExecutionEnvironment()
     const program = parse("(block (open Unit) (intersection (arc O) XAxis))")
-    const result = evaluateExpression(program.body.forms[0])
+    const result = ee.eval(program.body.forms[0])
 
     const [A, B] = result
     assert(A instanceof types.Point)
@@ -117,12 +122,13 @@ describe("some handwritten small programs", function () {
   })
 
   xit("can label multiple values", () => {
+    const ee = new ExecutionEnvironment()
     //TODO: find a way to do this without block, because block on exit loses scope
     const program = parse("(block (open Unit) (label (names A B) (intersection (arc O) XAxis)))")
-    evaluateExpression(program.body.forms[0])
+    ee.eval(program.body.forms[0])
 
-    const A = state.symbolTable.resolve("A")
-    const B = state.symbolTable.resolve("B")
+    const A = ee.symbolTable.resolve("A")
+    const B = ee.symbolTable.resolve("B")
 
     console.log('yo', A, B)
     //assert(A instanceof types.Point)
