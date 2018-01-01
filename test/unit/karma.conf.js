@@ -2,7 +2,6 @@
 //   http://karma-runner.github.io/0.13/config/configuration-file.html
 // we are also using it with karma-webpack
 //   https://github.com/webpack/karma-webpack
-
 var webpackConfig = require('../../build/webpack.test.conf')
 
 module.exports = function (config) {
@@ -11,7 +10,7 @@ module.exports = function (config) {
     // 1. install corresponding karma launcher
     //    http://karma-runner.github.io/0.13/config/browsers.html
     // 2. add it to the `browsers` array below.
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJSCustom'],
     frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
     reporters: ['spec', 'coverage'],
     files: ['./index.js'],
@@ -28,6 +27,25 @@ module.exports = function (config) {
         { type: 'lcov', subdir: '.' },
         { type: 'text-summary' }
       ]
+    },
+    customLaunchers: {
+      PhantomJSCustom: {
+        base: 'PhantomJS',
+        options: {
+          onCallback: function (data) {
+            if (data.type == "program-parse-output") {
+              var fs = require("fs")
+              var path = 'test/unit/programs/' + data.name + ".case.json"
+
+              if (!fs.exists(path)) {
+                fs.touch(path)
+              }
+
+              fs.write(path, data.ast, 'w')
+            }
+          }
+        }
+      }
     }
   })
 }

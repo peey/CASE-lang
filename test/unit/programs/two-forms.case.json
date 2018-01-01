@@ -1,0 +1,90 @@
+{
+  "type": "Program",
+  "body": {
+    "type": "Body",
+    "forms": [
+      {
+        "type": "form",
+        "children": [
+          {
+            "type": "functionName",
+            "value": "this-is-the-first-form",
+            "text": "this-is-the-first-form",
+            "offset": 1,
+            "lineBreaks": 0,
+            "line": 1,
+            "col": 2
+          },
+          {
+            "type": "identifier",
+            "value": "Hello",
+            "text": "Hello",
+            "offset": 24,
+            "lineBreaks": 0,
+            "line": 1,
+            "col": 25
+          },
+          {
+            "type": "number",
+            "value": "123",
+            "text": "123",
+            "offset": 30,
+            "lineBreaks": 0,
+            "line": 1,
+            "col": 31
+          },
+          {
+            "type": "identifier",
+            "value": "Harmless",
+            "text": "Harmless",
+            "offset": 34,
+            "lineBreaks": 0,
+            "line": 1,
+            "col": 35
+          }
+        ]
+      },
+      {
+        "type": "form",
+        "children": [
+          {
+            "type": "functionName",
+            "value": "final-form",
+            "text": "final-form",
+            "offset": 45,
+            "lineBreaks": 0,
+            "line": 2,
+            "col": 2
+          },
+          {
+            "type": "identifier",
+            "value": "I",
+            "text": "I",
+            "offset": 56,
+            "lineBreaks": 0,
+            "line": 2,
+            "col": 13
+          },
+          {
+            "type": "identifier",
+            "value": "AM",
+            "text": "AM",
+            "offset": 58,
+            "lineBreaks": 0,
+            "line": 2,
+            "col": 15
+          },
+          {
+            "type": "identifier",
+            "value": "EVIL",
+            "text": "EVIL",
+            "offset": 61,
+            "lineBreaks": 0,
+            "line": 2,
+            "col": 18
+          }
+        ]
+      }
+    ]
+  }
+}

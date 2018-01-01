@@ -9,6 +9,11 @@ function resolve (dir) {
 }
 
 
+function debugLoader(source, map) {
+  console.log("Yo this is the debug loader", source)
+  this.callback(null, source, map)
+}
+
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
@@ -29,8 +34,19 @@ module.exports = {
       '@': resolve('src'),
     }
   },
+  resolveLoader: {
+    modules: ['node_modules', path.resolve(__dirname, 'loaders')]
+  },
   module: {
     rules: [
+      {
+        test: /\.ne$/,
+        use: [
+          'babel-loader',
+          'intermediary-loader', // see comments in ./loader/intermediary-loader.js for full explanation
+          'nearley-loader'
+        ]
+      },
       {
         test: /\.vue$/,
         loader: 'vue-loader',

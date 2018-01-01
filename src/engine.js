@@ -1,4 +1,3 @@
-//TODO: swap out algebra.js for algebraite because algebra.js doesn't support square roots
 import nerdamer from 'nerdamer/all'
 import Complex from 'complex.js'
 import h from './helpers.js'
@@ -6,7 +5,17 @@ import h from './helpers.js'
 console.log("nerdamer", nerdamer)
 
 export class Point {
-  constructor({x, y}) {
+  constructor(a, b) {
+    let x, y
+    if (typeof b === "undefined") {
+      // called as new Point({x: 0, y:0})
+      ({x, y} = a)
+    } else {
+      // called as new Point(0, 0)
+      x = a
+      y = b
+    }
+
     this.x = nerdamer(x)
     this.y = nerdamer(y)
   }
@@ -16,6 +25,18 @@ export class Point {
       re: h.val(this.x),
       im: h.val(this.y)
     })
+  }
+
+  same(p) {
+    return h.eq(p.x, this.x) && h.eq(p.y, this.y)
+  }
+
+  distance(p) {
+    return nerdamer("sqrt((a-b)^2 + (c-d)^2)")
+      .sub("a", this.x)
+      .sub("b", p.x)
+      .sub("c", this.y)
+      .sub("d", p.y)
   }
 
   toString() {
@@ -158,5 +179,9 @@ export class Circle {
 
       return this.pointsOfIntersectionWithLine(line)
     }
+  }
+
+  same(c) {
+    return this.center.same(c.center) && h.eq(this.radius, c.radius)
   }
 }
