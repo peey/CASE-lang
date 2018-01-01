@@ -23,6 +23,20 @@ export const types = {
   Circle: engine.Circle
 }
 
+// all the error messages of the program, along with debug (line number) information
+// TODO: line number information
+const errors = {
+  ArgMisMatch(method, args) {
+    return `${method} does not accept ${args} arguments`
+  },
+  NotAFunction(method) {
+    return `${method} is not a function`
+  },
+  InvalidGrammar(found, expected) {
+    return `Found ${found}, expected ${expected}`
+  }
+}
+
 export class SymbolTable {
   constructor(provided = {}) {
     this.provided = Object.assign({
@@ -94,7 +108,10 @@ function evaluateUDF(fn, args) {
 
 export function evaluateExpression(e) {
   if (e.type === "form") {
-    //TODO: check that first child of the form is a functionName, or edit the grammar to reflect this
+    if (e.children[0].type !== "functionName") {
+      throw errors.invalidGrammar(e.children[0].type, "functionName")
+    }
+
     // first try built-in functions
     if (builtInFunctions[e.children[0].value]) {
       const fn = builtInFunctions[e.children[0].value]
@@ -111,15 +128,6 @@ export function evaluateExpression(e) {
   }
 }
 
-// all the error messages of the program, along with debug (line number) information
-const errors = {
-  ArgMisMatch(method, args) {
-    return `${method} does not accept ${args} arguments`
-  },
-  NotAFunction(method) {
-    return `${method} is not a function`
-  }
-}
 
 // all the handy validators
 const expect = {
@@ -283,10 +291,3 @@ const builtInFunctions = {
     }
   }
 }
-
-/*
- * [TODO] DISCUSSION - Is circle useful as a data type? there is no function which returns a circle.
- * In construction we generally draw the lines first and the compass arcs intersect with those, rather than the other way around.
- * So perhaps there is no need for a circle type because we never need to store it and refer to it later.
- * The only need to refer to a circle would be during styling, but we can look into that later
- */

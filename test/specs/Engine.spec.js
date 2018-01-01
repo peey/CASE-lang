@@ -10,6 +10,17 @@ describe('Point', () => {
 
     assert(p.complex().equals(new Complex({re: 5, im: 2})))
   })
+
+  it("can tell if another point is same as it", () => {
+    const p1 = new Point({x: nerdamer("sqrt(3)/2"), y: 8})
+    const p2 = new Point({x: nerdamer("sqrt(3)/2"), y: 8})
+    const p3 = new Point({x: nerdamer("sqrt(3)/2"), y: 9})
+    const p4 = new Point({x: nerdamer("sqrt(3)/4"), y: 8})
+
+    assert(p1.same(p2))
+    assert(!p1.same(p3))
+    assert(!p1.same(p4))
+  })
 })
 
 describe('Line', () => {
@@ -147,6 +158,17 @@ describe("Circle", () => {
     assert(!c.boundaryPoint(new Point({x: 1, y: 1})))
   })
 
+  it("can tell if another circle is the same as it", () => {
+    const c1 = new Circle(new Point({x: nerdamer("sqrt(3)/2"), y: 8}), nerdamer("sqrt(8)"))
+    const c2 = new Circle(new Point({x: nerdamer("sqrt(3)/2"), y: 8}), nerdamer("sqrt(8)"))
+    const c3 = new Circle(new Point({x: nerdamer("sqrt(3)/2"), y: 8}), nerdamer("sqrt(3)/2"))
+    const c4 = new Circle(new Point({x: nerdamer("sqrt(3)/4"), y: 8}), nerdamer("sqrt(8)"))
+
+    assert(c1.same(c2))
+    assert(!c1.same(c3))
+    assert(!c1.same(c4))
+  })
+
   it("can find points of intersection with a line", () => {
     const c = new Circle(new Point({x: 3, y: 6}), nerdamer("sqrt(45)"))
 
@@ -185,4 +207,5 @@ describe("Circle", () => {
     const b = nerdamer("(1/2)*(-5*sqrt(3)+2)")
     assert(h.eq(results[0].y, a) && h.eq(results[1].y, b) || h.eq(results[0].y, b) && h.eq(results[1].y, a))
   })
+
 })
