@@ -91,7 +91,7 @@ describe("some handwritten small programs", function () {
     const program = parse("(block (open Unit) (arc O))")
     const result = evaluateExpression(program.body.forms[0])
     assert(result instanceof types.Circle)
-    assert(result.same(new types.Circle(new types.Point({x:0, y:0}), 1)))
+    assert(result.same(new types.Circle(new types.Point(0, 0), 1)))
   })
 
   it("can make new labels", () => {
