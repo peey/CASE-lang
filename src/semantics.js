@@ -123,7 +123,24 @@ const errors = {
 
 // all the handy validators
 const expect = {
-  type(a, b) {
+  type(objects, types) {
+    objects = Array.isArray(objects)? objects : [objects]
+    types = Array.isArray(types)? types : [types]
+
+    objects.forEach((object) => {
+      let flag = false
+      for (let i = 0; i < types.length; i++) {
+        if (object instanceof types[i]) {
+          flag = true
+          break
+        }
+      }
+
+      if (flag == false) {
+        throw new Error(`${object} does not belong to type ${types}`)
+      }
+    })
+
     return true
   }
 }
