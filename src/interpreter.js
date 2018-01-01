@@ -3,13 +3,13 @@ import moo from 'moo'
 import grammar from './lisp-grammar.ne'
 import semantics from './semantics'
 
-const parser = new Parser(Grammar.fromCompiled(grammar))
 
 // removes comments
 function preProcess(source) {
   return source.replace(/;.*$/gm, "")
 }
 export function parse(source) {
+  const parser = new Parser(Grammar.fromCompiled(grammar))
   const preProcessed = preProcess(source)
   parser.feed(preProcessed)
   if (parser.results.length != 1) {
