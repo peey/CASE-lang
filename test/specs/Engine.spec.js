@@ -172,29 +172,24 @@ describe("Circle", () => {
   it("can find points of intersection with a line", () => {
     const c = new Circle(new Point({x: 3, y: 6}), nerdamer("sqrt(45)"))
 
-
     let l, results, yvals
     // vertical line
     l = new Line({eqn: nerdamer("x = 0")})
     results = c.pointsOfIntersectionWithLine(l)
-    assert(h.eq(results[0].x, 0))
-    assert(h.eq(results[1].x, 0))
-
-    // don't know how to sort nerdamer values for now
-    assert(h.eq(results[0].y, 0) && h.eq(results[1].y, 12) || h.eq(results[1].y, 0) && h.eq(results[0].y, 12))
+    assert(results[0].same(new Point(0, 12)))
+    assert(results[1].same(new Point(0, 0)))
 
     // random line
     l = new Line({eqn: nerdamer("y = x")})
     results = c.pointsOfIntersectionWithLine(l)
-    // don't know how to sort nerdamer values for now
-    assert(h.eq(results[0].x, 0) && h.eq(results[1].x, 9) || h.eq(results[0].x, 9) && h.eq(results[1].x, 0))
-    assert(h.eq(results[0].y, 0) && h.eq(results[1].y, 9) || h.eq(results[0].y, 9) && h.eq(results[1].y, 0))
+    assert(results[0].same(new Point(0, 0)))
+    assert(results[1].same(new Point(9, 9)))
 
     // tangent
     l = new Line({eqn: nerdamer("y = 6 - sqrt(45)")})
     results = c.pointsOfIntersectionWithLine(l)
     assert(results.length == 1)
-    assert(h.eq(results[0].x, "3") && h.eq(results[0].y, nerdamer("6 - sqrt(45)")))
+    assert(results[0].same(new Point(3, nerdamer("6 - sqrt(45)"))))
   })
 
   it("can find points of intersection with another circle", () => {
@@ -202,10 +197,10 @@ describe("Circle", () => {
     const c2 = new Circle(new Point({x:10, y:1}), 7)
     const results = c1.pointsOfIntersectionWithCircle(c2)
     // verified by wolfaram alpha : https://www.wolframalpha.com/input/?i=intersection+points+of+(x+-+2)%5E2+%2B+(y-1)%5E2+%3D+25,+(x+-+10)%5E2+%2B+(y-1)%5E2+%3D+49
-    assert(h.eq(results[0].x, nerdamer("9/2")) && h.eq(results[0].x, nerdamer("9/2")))
-    const a = nerdamer("(1/2)*(5*sqrt(3)+2)")
-    const b = nerdamer("(1/2)*(-5*sqrt(3)+2)")
-    assert(h.eq(results[0].y, a) && h.eq(results[1].y, b) || h.eq(results[0].y, b) && h.eq(results[1].y, a))
+    const a = nerdamer("(1/2)*(-5*sqrt(3)+2)")
+    const b = nerdamer("(1/2)*(5*sqrt(3)+2)")
+    assert(results[0].same(new Point(nerdamer("9/2"), b)))
+    assert(results[1].same(new Point(nerdamer("9/2"), a)))
   })
 
 })

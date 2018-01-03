@@ -1,4 +1,4 @@
-import {parse} from '@/interpreter'
+import {parse, REPL} from '@/interpreter'
 import {types, ExecutionEnvironment} from '@/semantics'
 import h from '@/helpers'
 
@@ -121,20 +121,17 @@ describe("some handwritten small programs", function () {
     assert(B.same(new types.Point(0, -1)))
   })
 
-  xit("can label multiple values", () => {
-    const ee = new ExecutionEnvironment()
-    //TODO: find a way to do this without block, because block on exit loses scope
-    const program = parse("(block (open Unit) (label (names A B) (intersection (arc O) XAxis)))")
-    ee.eval(program.body.forms[0])
+  it("can label multiple values", () => {
+    const repl = new REPL()
+    repl.loop("(open Unit) (label (names A B) (intersection (arc O) XAxis))")
 
-    const A = ee.symbolTable.resolve("A")
-    const B = ee.symbolTable.resolve("B")
+    const A = repl.ee.symbolTable.resolve("A")
+    const B = repl.ee.symbolTable.resolve("B")
 
-    console.log('yo', A, B)
-    //assert(A instanceof types.Point)
-    //assert(B instanceof types.Point)
+    assert(A instanceof types.Point)
+    assert(B instanceof types.Point)
 
-    //assert(A.same(new types.Point(0, -1)))
-    //assert(B.same(new types.Point(0, 1)))
+    assert(A.same(new types.Point(0, 1)))
+    assert(B.same(new types.Point(0, -1)))
   })
 })

@@ -4,6 +4,17 @@ import h from './helpers.js'
 
 console.log("nerdamer", nerdamer)
 
+// comparator for sorting points north-west (-,+ quad) to south-east (+, - quad)
+// TODO: sort clockwise. See https://stackoverflow.com/a/6989383/1412255 for ref. It does it from 12'o clock while I want to start it at 6'o clock
+function pointComparator(a, b) {
+  const cmpx = h.cmp(a.x, b.x)
+  if (cmpx !== 0) {
+    return cmpx
+  } else {
+    return h.cmp(b.y, a.y)
+  }
+}
+
 export class Point {
   constructor(a, b) {
     let x, y
@@ -153,12 +164,16 @@ export class Circle {
         return [new Point({x, y: this.center.y})]
       } else if (comparison == -1) {
         const ySolutions = this.equation.sub("x", x).solveFor("y")
-        return ySolutions.map(y => new Point({x, y: nerdamer(y, {x: x})}))
+        const result =  ySolutions.map(y => new Point({x, y: nerdamer(y, {x: x})}))
+        result.sort(pointComparator)
+        return result
       }
     } else {
       const eqnInX = this.equation.sub("y", nerdamer("(m*x + c)", {m: l.slope, c: l.yIntercept}))
       const xSolutions = eqnInX.solveFor("x")
-      return xSolutions.map(x => new Point({x, y: l.equation.sub("x", x).solveFor("y")}))
+      const result = xSolutions.map(x => new Point({x, y: l.equation.sub("x", x).solveFor("y")}))
+      result.sort(pointComparator)
+      return result
     }
   }
 
@@ -177,7 +192,9 @@ export class Circle {
 
       const line = new Line({eqn: lineEquation})
 
-      return this.pointsOfIntersectionWithLine(line)
+      const result = this.pointsOfIntersectionWithLine(line)
+      result.sort(pointComparator)
+      return result
     }
   }
 

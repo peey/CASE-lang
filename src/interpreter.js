@@ -1,7 +1,7 @@
 import {Parser, Grammar} from 'nearley'
 import moo from 'moo'
 import grammar from './lisp-grammar.ne'
-import semantics from './semantics'
+import {ExecutionEnvironment, types} from './semantics'
 
 
 // removes comments
@@ -17,6 +17,32 @@ export function parse(source) {
     throw new Error(`The parser returned ${parser.results.length} results!`)
   }
   return parser.results[0]
+}
+
+export class REPL {
+	constructor() {
+		this.ee = new ExecutionEnvironment()
+    // used to keep track of things which we have output to the screen already
+    // done this because the alternative - empty the ee.output every time we print - would require modification of the original ee object
+    this.previousOutputEndPosition = 0
+	}
+
+  loop(source) {
+    // READ
+    const parseTree = parse(source)
+    const forms = parseTree.body.forms
+
+    //EVAL
+    for (let i = 0; i < forms.length; i++) {
+      this.ee.eval(forms[i])
+    }
+
+    //PRINT
+    if (this.ee.output.length > this.previousOutputEndPosition) {
+      console.log(this.ee.output.slice(this.previousOutputEndPosition))
+      this.previousOutputEndPosition = this.ee.output.length
+    }
+  }
 }
 
 //TODO: test the following two walking functions. They are not being used rn. Chuck them out if they have no use in the final product either
