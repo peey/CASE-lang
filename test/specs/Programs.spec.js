@@ -107,6 +107,10 @@ describe("some handwritten small programs", function () {
     assert(h.eq(ee.symbolTable.resolve("FUnit").value, nerdamer(1)))
   })
 
+  xit("can label result of an evaluation", () => {
+    const program = parse("(label (names A) (block (open Unit) (arc O)))")
+  })
+
   it("can give intersection between a circle and a line", () => {
     const ee = new ExecutionEnvironment()
     const program = parse("(block (open Unit) (intersection (arc O) XAxis))")
@@ -116,9 +120,8 @@ describe("some handwritten small programs", function () {
     assert(A instanceof types.Point)
     assert(B instanceof types.Point)
 
-    //NOTE: if this test case errors, must be due to the order of A, B
-    assert(A.same(new types.Point(0, 1)))
-    assert(B.same(new types.Point(0, -1)))
+    assert(A.same(new types.Point(-1, 0)))
+    assert(B.same(new types.Point(1, 0)))
   })
 
   it("can label multiple values", () => {
@@ -131,7 +134,36 @@ describe("some handwritten small programs", function () {
     assert(A instanceof types.Point)
     assert(B instanceof types.Point)
 
-    assert(A.same(new types.Point(0, 1)))
-    assert(B.same(new types.Point(0, -1)))
+    assert(A.same(new types.Point(-1, 0)))
+    assert(B.same(new types.Point(1, 0)))
+  })
+
+  it("can open compass given two points", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (open Unit)
+      (label (names A B) (intersection (arc O) XAxis))
+      (open A B)
+    `)
+
+    assert(h.eq(repl.ee.compassLength.value, nerdamer(2)))
+  })
+
+  it("can make a new line", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (open Unit)
+      (label (names A B) (intersection (arc O) XAxis))
+      (open A B)
+      (label (names C D) (arc A) (arc B))
+      (label (names P Q) (intersection C D))
+      (label (names L) (line P Q))
+    `)
+
+    const L = repl.ee.symbolTable.resolve("L")
+
+    assert(L instanceof types.Line)
+
+    assert(L.same(new types.Line({eqn: nerdamer("x=0")})))
   })
 })

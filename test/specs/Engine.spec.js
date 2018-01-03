@@ -21,6 +21,12 @@ describe('Point', () => {
     assert(!p1.same(p3))
     assert(!p1.same(p4))
   })
+
+  it("can calculate distance between itself and another point", () => {
+    const p = new Point(0, 0)
+    const q = new Point(1, 1)
+    assert(h.eq(p.distance(q), nerdamer("sqrt(2)")))
+  })
 })
 
 describe('Line', () => {
@@ -201,6 +207,11 @@ describe("Circle", () => {
     const b = nerdamer("(1/2)*(5*sqrt(3)+2)")
     assert(results[0].same(new Point(nerdamer("9/2"), b)))
     assert(results[1].same(new Point(nerdamer("9/2"), a)))
+  })
+
+  it("can convert to string representation", () => {
+    const c = new Circle(new Point({x:2, y:1}), 5)
+    expect(c.toString()).to.equal("Circle[(2,1), 5]")
   })
 
 })

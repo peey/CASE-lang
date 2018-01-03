@@ -63,10 +63,13 @@ export class Line {
         // the line is vertical
         this.slope = Infinity
         this.xIntercept = p1.x
+        this.equation = nerdamer("x = c").sub("c", this.xIntercept)
       } else {
         this.slope = p1.y.subtract(p2.y).divide(p1.x.subtract(p2.x))
         this.yIntercept = p1.y.subtract(this.slope.multiply(p1.x))
-        this.equation = nerdamer("y = mx + c", {m: this.slope, c: this.yIntercept})
+        this.equation = nerdamer("y = m*x + c")
+          .sub("m", this.slope)
+          .sub("c", this.yIntercept)
       }
     } else if (eqn) {
       this.equation = eqn
@@ -124,6 +127,10 @@ export class Line {
         return new Point({x, y})
       }
     }
+  }
+
+  toString() {
+    return this.equation.toString()
   }
 }
 
@@ -200,5 +207,9 @@ export class Circle {
 
   same(c) {
     return this.center.same(c.center) && h.eq(this.radius, c.radius)
+  }
+
+  toString() {
+    return "Circle[" + this.center.toString() + ", " + this.radius.toString() + "]"
   }
 }

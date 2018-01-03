@@ -1,5 +1,6 @@
 import nerdamer from "nerdamer"
 import * as engine from "./engine"
+import h from "./helpers"
 
 //is wrapping these in a class even necessary? perhaps it helps because it ensures a valid value
 export const types = {
@@ -42,7 +43,7 @@ export class SymbolTable {
     this.provided = Object.assign({
       Unit: new types.Length(1),
       O: new types.Point({x:0, y:0}),
-      XAxis: new types.Line({eqn: nerdamer("x = 0")})
+      XAxis: new types.Line({eqn: nerdamer("y = 0")})
     }, provided)
 
     this.stack = [{
@@ -127,7 +128,7 @@ export class ExecutionEnvironment {
   }
 
   getCompassLength() {
-    if (typeof this.compassLength == "undefined") {
+    if (typeof this.compassLength === "undefined") {
       throw "compass length is undefined and can't be used"
     } else {
       return this.compassLength
@@ -177,7 +178,8 @@ export class ExecutionEnvironment {
       const q = this.eval(args[1])
       expect.type([p, q], types.Point)
 
-      return new types.Line({points: [p, q]})
+      const l = new types.Line({points: [p, q]})
+      return l
     } else {
       throw errors.ArgMisMatch(fn, args.length)
     }
@@ -203,7 +205,7 @@ export class ExecutionEnvironment {
       expect.type(a, types.Point)
       expect.type(b, types.Point)
 
-      this.compassLength = a.distance(b)
+      this.compassLength = new types.Length(a.distance(b))
     } else {
       throw errors.ArgMisMatch(fn, args.length)
     }
@@ -228,7 +230,11 @@ export class ExecutionEnvironment {
 
       for (let i = 1; i < args.length; i++) {
         const result = this.eval(args[i])
-        rhs = rhs.concat(result || [])
+        if (Array.isArray(result)) {
+          rhs = rhs.concat(result)
+        } else if (typeof result !== "undefined") {
+          rhs.push(result)
+        }
       }
 
       if (names.length != rhs.length) {
