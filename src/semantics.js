@@ -125,6 +125,8 @@ export class ExecutionEnvironment {
     this.compassLength = undefined
     this.udfs = {}
     this.output = ""
+    // serves purpose for only debugging. We don't require a stack to evauate as these are generally used because our recursive calls in JS take care of it.
+    this.callStack = []
   }
 
   getCompassLength() {
@@ -148,7 +150,13 @@ export class ExecutionEnvironment {
       if (this["_bi_" + fnName]) {
         const fnNode = e.children[0]
         const argNodes = e.children.slice(1)
-        return this["_bi_" + fnName](argNodes, fnNode)
+        this.callStack.push({ // save the point where function call was made from
+          fn: fnNode
+        })
+        const result = this["_bi_" + fnName](argNodes, fnNode)
+        // remove from call stack after successful evaluation
+        this.callStack.pop()
+        return result
       } else {
         // this will be implemented later
       }
@@ -266,9 +274,8 @@ export class ExecutionEnvironment {
 
   _bi_loop(args, fn) {
     if (args.length >= 2) {
-      expect.type(args[0], types.Int)
-      const n = parseInt(args[0].value) // the number of times to loop
-      for (let i = 0; i < n; i++) {
+      const n = new types.Int(parseInt(args[0].value)) // the number of times to loop
+      for (let i = 0; i < n.value; i++) {
         for (let j = 1; j < args.length; j++) {
           this.eval(args[j])
         }

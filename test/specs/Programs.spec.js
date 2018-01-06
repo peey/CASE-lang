@@ -130,7 +130,6 @@ describe("some handwritten small programs", function () {
 
     const A = repl.ee.symbolTable.resolve("A")
     const B = repl.ee.symbolTable.resolve("B")
-
     assert(A instanceof types.Point)
     assert(B instanceof types.Point)
 
@@ -165,5 +164,21 @@ describe("some handwritten small programs", function () {
     assert(L instanceof types.Line)
 
     assert(L.same(new types.Line({eqn: nerdamer("x=0")})))
+  })
+
+  it("can loop", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (open Unit)
+      (label (names C) O)
+      (loop 10
+        (label (names _ A) (intersection (arc C) XAxis))
+        (label (names C) A))
+    `)
+
+    const A = repl.ee.symbolTable.resolve("A")
+
+    assert(A instanceof types.Point)
+    assert(A.same(new types.Point(10, 0)))
   })
 })
