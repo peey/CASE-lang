@@ -21,13 +21,14 @@ _ -> %ws:?
 GroupWithSeparator[X, Y] -> $X $Y {% ([term, separator]) => term[0][0] %}
 Group[X, Y] -> GroupWithSeparator[$X, $Y]:* $X {% (terms) => ({type: "group", elements: terms[0].concat(terms[1])})%}
 
+# the following has at least one form, because groups have at least one form
 Body -> Group[TopLevelForm, __] {% ([group])=> ({type: "Body", forms: group.elements}) %}
 
 TopLevelForm ->  (FunctionCall | Loop) {% ([match]) => match[0]%}
 
 FunctionCall -> %lparen _ %functionName __ Group[Term, __]:? _ %rparen {% ([,,fn,, group,,]) => ({type: "form", children: [fn].concat(group? group.elements : [])}) %}
 
-Loop -> %lparen _ %kw_loop __ %number __ Body _ %rparen {% ([,,n,body,]) => ({type: "loop", n, body}) %}
+Loop -> %lparen _ %kw_loop __ %number __ Body _ %rparen {% ([,,kw,,n,,body,]) => ({type: "loop", n, body, begin: kw}) %}
 
 Form -> %lparen _ Group[Term, __]:?  _ %rparen {% ([,,group,,]) => ({type: "form", children: group.elements}) %}
 

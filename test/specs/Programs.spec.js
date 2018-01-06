@@ -42,6 +42,7 @@ Object.keys(programs).forEach((key) => {
 
       if(prettyJSON(program.parsed) !== stringified) {
         //TODO: diff
+        console.log(stringified)
         throw new Error("Parsed mismatch")
       }
     } else {
@@ -176,9 +177,8 @@ describe("some handwritten small programs", function () {
         (label (names C) A))
     `)
 
-    const A = repl.ee.symbolTable.resolve("A")
-
-    assert(A instanceof types.Point)
-    assert(A.same(new types.Point(10, 0)))
+    const C = repl.ee.symbolTable.resolve("C")
+    assert(C instanceof types.Point)
+    assert(C.same(new types.Point(10, 0)))
   })
 })

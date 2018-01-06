@@ -12,6 +12,10 @@ export const types = {
         throw new TypeError("semantics.types: expected Integer, got " + i)
       }
     }
+
+    toString() {
+      return `Int<${this.value}>`
+    }
   },
   Length: class Length {
     constructor(l) {
@@ -125,8 +129,8 @@ export class ExecutionEnvironment {
     this.compassLength = undefined
     this.udfs = {}
     this.output = ""
-    // serves purpose for only debugging. We don't require a stack to evauate as these are generally used because our recursive calls in JS take care of it.
-    this.callStack = []
+    // serves purpose for only debugging. We don't require a stack to evauate calls because our recursive evaluation in JS take care of it.
+    this.evalStack = []
   }
 
   getCompassLength() {
@@ -150,18 +154,24 @@ export class ExecutionEnvironment {
       if (this["_bi_" + fnName]) {
         const fnNode = e.children[0]
         const argNodes = e.children.slice(1)
-        this.callStack.push({ // save the point where function call was made from
-          fn: fnNode
-        })
+        // save the point where function call was made from
+        this.evalStack.push({ fnCall : fnNode })
         const result = this["_bi_" + fnName](argNodes, fnNode)
         // remove from call stack after successful evaluation
-        this.callStack.pop()
+        this.evalStack.pop()
         return result
       } else {
         // this will be implemented later
       }
     } else if (e.type === "identifier") {
       return this.symbolTable.resolve(e.value)
+    } else if (e.type === "loop") {
+        const body = e.body
+        this.evalStack.push({ loopCall : e.begin })
+        const result = this._bi_loop(e.n, body, e.begin)
+        // remove from call stack after successful evaluation
+        this.evalStack.pop()
+        return result
     } else {
       throw new Error(`${e.type} node is not eval-able`)
     }
@@ -272,16 +282,12 @@ export class ExecutionEnvironment {
     }
   }
 
-  _bi_loop(args, fn) {
-    if (args.length >= 2) {
-      const n = new types.Int(parseInt(args[0].value)) // the number of times to loop
-      for (let i = 0; i < n.value; i++) {
-        for (let j = 1; j < args.length; j++) {
-          this.eval(args[j])
-        }
+  _bi_loop(nNode, body, fn) {
+    const n = new types.Int(parseInt(nNode.value)) // the number of times to loop
+    for (let i = 0; i < n.value; i++) {
+      for (let j = 0; j < body.forms.length; j++) {
+        this.eval(body.forms[j])
       }
-    } else {
-      throw errors.ArgMisMatch(fn, args.length)
     }
   }
 
