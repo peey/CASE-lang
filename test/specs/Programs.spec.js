@@ -42,6 +42,7 @@ Object.keys(programs).forEach((key) => {
 
       if(prettyJSON(program.parsed) !== stringified) {
         //TODO: diff
+        console.log(stringified)
         throw new Error("Parsed mismatch")
       }
     } else {
@@ -176,9 +177,39 @@ describe("some handwritten small programs", function () {
         (label (names C) A))
     `)
 
-    const A = repl.ee.symbolTable.resolve("A")
+    const C = repl.ee.symbolTable.resolve("C")
+    assert(C instanceof types.Point)
+    assert(C.same(new types.Point(10, 0)))
+  })
 
-    assert(A instanceof types.Point)
-    assert(A.same(new types.Point(10, 0)))
+  it("can define a new function", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (defun increment (Units)
+        (open Units)
+        (label (names _ A) (intersection (arc O) XAxis))
+        (open Unit)
+        (label (names _ B) (intersection (arc A) XAxis))
+        (length O B))
+    `)
+
+    assert(repl.ee.udfs['increment'])
+  })
+
+  it("can eval udfs", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (defun increment (Units)
+        (open Units)
+        (label (names _ A) (intersection (arc O) XAxis))
+        (open Unit)
+        (label (names _ B) (intersection (arc A) XAxis))
+        (length O B))
+      (label (names Two) (increment Unit))
+    `)
+
+    const Two = repl.ee.symbolTable.resolve("Two")
+    assert(Two instanceof types.Length)
+    assert(Two.same(new types.Length(2)))
   })
 })
