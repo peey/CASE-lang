@@ -51,6 +51,25 @@ describe("Symbol Table", () => {
     table.newScope(true) //parent is heirarchial but current is not
     table.newScope()
     assert(!table.resolve("A"))
+
+    table.exitScope()
+    table.exitScope()
+  })
+
+  it("Resolves provided symbols if not overshadowed", () => {
+    const table = new SymbolTable({"A": new types.Int(3)})
+
+    table.newScope()
+    assert(table.resolve("A"))
+    table.exitScope()
+
+    table.newScope(true)
+    assert(table.resolve("A"))
+    table.exitScope()
+
+    table.newScope(false, {"B": new types.Int(2)})
+    assert(table.resolve("A"))
+    table.exitScope()
   })
 
   it("Does not limit access in heirarchial scope", () => {

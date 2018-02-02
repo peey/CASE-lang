@@ -22,6 +22,14 @@ export const types = {
       //TODO: verify that the value is valid
       this.value = nerdamer(l)
     }
+
+    same(l) {
+      return h.eq(l.value, this.value)
+    }
+
+    toString() {
+      return `Length<${this.value}>`
+    }
   },
   Point: engine.Point,
   Line: engine.Line,
@@ -89,16 +97,6 @@ export class SymbolTable {
   }
 }
 
-function defineUDF(fn, args) {
-
-}
-
-function evaluateUDF(fn, args) {
-
-}
-
-
-
 // all the handy validators
 const expect = {
   type(objects, types) {
@@ -145,36 +143,65 @@ export class ExecutionEnvironment {
   // evaluate an expression
   eval(e) {
     if (e.type === "form") {
-      if (e.children[0].type !== "functionName") {
-        throw errors.invalidGrammar(e.children[0].type, "functionName")
-      }
 
       // first try built-in functions
       let fnName = e.children[0].value
+      const fnNode = e.children[0]
+      const argNodes = e.children.slice(1)
+
       if (this["_bi_" + fnName]) {
-        const fnNode = e.children[0]
-        const argNodes = e.children.slice(1)
         // save the point where function call was made from
         this.evalStack.push({ fnCall : fnNode })
         const result = this["_bi_" + fnName](argNodes, fnNode)
         // remove from call stack after successful evaluation
         this.evalStack.pop()
         return result
-      } else {
-        // this will be implemented later
+      } else { // then try udfs. This means we don't allow overriding built-ins, this is because we don't provide a way to get them back.
+        if (this.udfs[fnName]) {
+          this.evalStack.push({ fnCall : fnNode })
+          const result = this.eval_udf(fnName, argNodes, fnNode)
+          this.evalStack.pop()
+          return result
+        }
       }
+
     } else if (e.type === "identifier") {
+
       return this.symbolTable.resolve(e.value)
+
     } else if (e.type === "loop") {
-        const body = e.body
-        this.evalStack.push({ loopCall : e.begin })
-        const result = this._bi_loop(e.n, body, e.begin)
-        // remove from call stack after successful evaluation
-        this.evalStack.pop()
-        return result
+
+      const body = e.body
+      this.evalStack.push({ loopCall : e.begin })
+      //loop construct won't result in a value, for now
+      this._bi_loop(e.n, body, e.begin)
+      // remove from call stack after successful evaluation
+      this.evalStack.pop()
+
+    } else if (e.type === "defun") {
+
+      this.udfs[e.name.value] = e // we just save the ast node. lol. but yeah, minimum gurantee we have is that it'll be syntactically correct. Other than that, we shouldn't see any exotic errors apart from the regular interpreter errors as the only thing we'll do is execute the function body in a new scope
+      return true
+
     } else {
       throw new Error(`${e.type} node is not eval-able`)
     }
+  }
+
+  eval_udf(name, args, call) {
+    const udf = this.udfs[name]
+
+    assert(args.length === udf.params.length, `Expected Parameter Length to Equal Argument List Length in call to UDF ${name}`)
+    const table = {}
+    udf.params.forEach((identifier, ix) => {
+      table[identifier.value] = this.eval(args[ix])
+    })
+
+    this.symbolTable.newScope(false, table)
+    let result
+    udf.body.forms.forEach((form) => (result = this.eval(form)));
+    this.symbolTable.exitScope()
+    return result
   }
 
   // _bi_ prefix denotes that it's a builtin function
@@ -205,7 +232,9 @@ export class ExecutionEnvironment {
 
   _bi_length(args, fn) {
     if (args.length == 2) {
-      return new types.Length(args[0].distance(args[1]))
+      const p = this.eval(args[0])
+      const q = this.eval(args[1])
+      return new types.Length(p.distance(q))
     } else {
       throw errors.ArgMisMatch(fn, args.length)
     }
@@ -256,7 +285,7 @@ export class ExecutionEnvironment {
       }
 
       if (names.length != rhs.length) {
-        throw `some error saying mismatch between number of variables on left hand side (${names.length}) and the right hand side (${rhs.length})`
+        throw `an error saying mismatch between number of variables on left hand side (${names.length}) and the right hand side (${rhs.length})`
       }
 
       names.forEach((name, ix) => this.symbolTable.set(name, rhs[ix]))

@@ -181,4 +181,35 @@ describe("some handwritten small programs", function () {
     assert(C instanceof types.Point)
     assert(C.same(new types.Point(10, 0)))
   })
+
+  it("can define a new function", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (defun increment (Units)
+        (open Units)
+        (label (names _ A) (intersection (arc O) XAxis))
+        (open Unit)
+        (label (names _ B) (intersection (arc A) XAxis))
+        (length O B))
+    `)
+
+    assert(repl.ee.udfs['increment'])
+  })
+
+  it("can eval udfs", () => {
+    const repl = new REPL()
+    repl.loop(`
+      (defun increment (Units)
+        (open Units)
+        (label (names _ A) (intersection (arc O) XAxis))
+        (open Unit)
+        (label (names _ B) (intersection (arc A) XAxis))
+        (length O B))
+      (label (names Two) (increment Unit))
+    `)
+
+    const Two = repl.ee.symbolTable.resolve("Two")
+    assert(Two instanceof types.Length)
+    assert(Two.same(new types.Length(2)))
+  })
 })
