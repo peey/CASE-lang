@@ -1,21 +1,17 @@
-# 2017-12-22-compass-and-straightedge
+# Compass And StraightEdge (CASE) Lang
 
-> A Vue.js project
+See `test/programs/*.case` and `test/specs/Programs.spec.js` for examples of how to write programs.
 
-## Build Setup
+Setup using `npm install`.
 
-``` bash
-# install dependencies
-npm install
+Run `npm run test` to see it in action. If there's an issue with phantomjs, connect to the port which `karma` outputs (usually 9876) from your browser, e.g. `localhost:9876` to see the tests run. Otherwise they'll timeout.
 
-# serve with hot reload at localhost:8080
-npm run dev
+This is what a successful test run would look like:
 
-# build for production with minification
-npm run build
+![](https://i.imgur.com/tSZlqOO.png)
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
+Note that if you connect via a browser, the test runner would still wait upto 60s for phantomjs to respond even though tests have finished running in your browser.
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Major Todos
+ - A GUI
+ - Solve the phantomjs quirk. It's because I need to provide reference output files to phantomjs so that it can make sure that the AST is correctly built (see `tests/programs/*.case.json`).
